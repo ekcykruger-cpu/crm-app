@@ -472,6 +472,19 @@ async function init() {
     applyLabels();
     renderCustomerList(allCustomers);
 
+    // ── URL search parameter ──────────────────────────────────────────────
+    // If the URL contains ?search=something  (e.g. ?search=john or ?search=082)
+    // pre-fill the search box and filter the list automatically on load.
+    // Example usage:  http://localhost:3000/?search=smith
+    const params = new URLSearchParams(window.location.search);
+    const searchParam = params.get('search');
+    if (searchParam) {
+      const input = document.getElementById('search-input');
+      input.value = searchParam;
+      // Trigger the same filter the user would get by typing
+      input.dispatchEvent(new Event('input'));
+    }
+
   } catch (err) {
     showToast('Could not connect to server: ' + err.message, true);
   }
