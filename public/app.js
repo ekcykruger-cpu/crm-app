@@ -483,6 +483,17 @@ async function init() {
       input.value = searchParam;
       // Trigger the same filter the user would get by typing
       input.dispatchEvent(new Event('input'));
+
+      // If exactly one customer matches, open their record automatically
+      const q = searchParam.toLowerCase();
+      const matches = allCustomers.filter(c =>
+        `${c.first_name} ${c.last_name}`.toLowerCase().includes(q) ||
+        (c.email && c.email.toLowerCase().includes(q)) ||
+        (c.phone && c.phone.toLowerCase().includes(q))
+      );
+      if (matches.length === 1) {
+        loadCustomer(matches[0].id);
+      }
     }
 
   } catch (err) {
