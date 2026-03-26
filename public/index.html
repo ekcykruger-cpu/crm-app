@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       MAIN APP WRAPPER
+       The entire app sits inside this container, which is fixed to ~35%
+       of a 14" laptop screen width (~480px).
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="app-wrapper">
+
+    <!-- ── Top Bar ─────────────────────────────────────────────────── -->
+    <header class="top-bar">
+      <span class="app-title">CRM</span>
+      <div class="top-actions">
+        <button class="btn-icon" id="btn-settings" title="Settings">&#9881;</button>
+        <button class="btn-primary" id="btn-new-customer">+ New</button>
+      </div>
+    </header>
+
+    <!-- ── Customer Search ──────────────────────────────────────────── -->
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search by name, email or phone…" />
+    </div>
+
+    <!-- ── Customer List ────────────────────────────────────────────── -->
+    <div class="customer-list" id="customer-list">
+      <!-- Populated by app.js -->
+      <div class="empty-state" id="list-empty">No customers yet. Click <strong>+ New</strong> to add one.</div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         CUSTOMER DETAIL PANEL
+         Shown when a customer is selected or being created/edited.
+    ═══════════════════════════════════════════════════════════════════ -->
+    <div class="detail-panel" id="detail-panel" style="display:none;">
+
+      <!-- Panel header with customer name + action buttons -->
+      <div class="panel-header">
+        <span class="panel-title" id="panel-title">New Customer</span>
+        <div class="panel-actions">
+          <button class="btn-ghost" id="btn-cancel">Cancel</button>
+          <button class="btn-primary" id="btn-save">Save</button>
+        </div>
+      </div>
+
+      <!-- ── Customer Form ────────────────────────────────────────── -->
+      <form id="customer-form" autocomplete="off">
+        <input type="hidden" id="customer-id" />
+
+        <div class="form-section-label">Contact Details</div>
+
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input type="text" id="first_name" name="first_name" required />
+          </div>
+          <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" id="last_name" name="last_name" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Mobile Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="e.g. 082 555 0100" />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="e.g. jane@example.com" />
+        </div>
+
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label for="fb_handle">Facebook</label>
+            <div class="input-prefix-wrap">
+              <span class="input-prefix">@</span>
+              <input type="text" id="fb_handle" name="fb_handle" placeholder="handle" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="twitter_handle">Twitter / X</label>
+            <div class="input-prefix-wrap">
+              <span class="input-prefix">@</span>
+              <input type="text" id="twitter_handle" name="twitter_handle" placeholder="handle" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Custom Fields (labels come from Settings) ──────────── -->
+        <div class="form-section-label">Additional Fields</div>
+
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label for="custom_field_1" id="label_1">Custom Field 1</label>
+            <input type="text" id="custom_field_1" name="custom_field_1" />
+          </div>
+          <div class="form-group">
+            <label for="custom_field_2" id="label_2">Custom Field 2</label>
+            <input type="text" id="custom_field_2" name="custom_field_2" />
+          </div>
+        </div>
+
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label for="custom_field_3" id="label_3">Custom Field 3</label>
+            <input type="text" id="custom_field_3" name="custom_field_3" />
+          </div>
+          <div class="form-group">
+            <label for="custom_field_4" id="label_4">Custom Field 4</label>
+            <input type="text" id="custom_field_4" name="custom_field_4" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="custom_field_5" id="label_5">Custom Field 5</label>
+          <input type="text" id="custom_field_5" name="custom_field_5" />
+        </div>
+
+      </form><!-- end #customer-form -->
+
+      <!-- Delete button (shown only for existing customers) -->
+      <div class="danger-zone" id="danger-zone" style="display:none;">
+        <button class="btn-danger" id="btn-delete">Delete Customer</button>
+      </div>
+
+      <!-- ═════════════════════════════════════════════════════════════
+           CONTACT HISTORY SECTION
+      ═════════════════════════════════════════════════════════════════ -->
+      <div class="history-section" id="history-section" style="display:none;">
+
+        <div class="history-header">
+          <span class="form-section-label" style="margin:0;">Contact History</span>
+          <button class="btn-sm" id="btn-add-contact">+ Add</button>
+        </div>
+
+        <!-- Add Contact Form (hidden by default) -->
+        <div class="add-contact-form" id="add-contact-form" style="display:none;">
+          <div class="form-section-label" style="font-size:0.7rem;">New Contact Record</div>
+
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="h_date" />
+            </div>
+            <div class="form-group">
+              <label>Time</label>
+              <input type="time" id="h_time" />
+            </div>
+          </div>
+
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>Agent</label>
+              <input type="text" id="h_agent" placeholder="Agent name" />
+            </div>
+            <div class="form-group">
+              <label>To (Phone / Email)</label>
+              <input type="text" id="h_contact_to" placeholder="Number or email used" />
+            </div>
+          </div>
+
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>Duration</label>
+              <input type="text" id="h_duration" placeholder="e.g. 5:30" />
+            </div>
+            <div class="form-group">
+              <label>Disposition Code</label>
+              <input type="text" id="h_disposition" placeholder="e.g. RESOLVED" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Notes <span class="char-hint" id="notes-hint">0 / 100</span></label>
+            <input type="text" id="h_notes" maxlength="100" placeholder="Short note about this contact…" />
+          </div>
+
+          <div class="form-row" style="justify-content:flex-end; gap:8px; margin-top:8px;">
+            <button class="btn-ghost btn-sm" id="btn-cancel-contact">Cancel</button>
+            <button class="btn-primary btn-sm" id="btn-save-contact">Save Contact</button>
+          </div>
+        </div><!-- end #add-contact-form -->
+
+        <!-- Contact History Table -->
+        <div class="history-table-wrap">
+          <table class="history-table" id="history-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Agent</th>
+                <th>To</th>
+                <th>Duration</th>
+                <th>Code</th>
+                <th>Notes</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="history-body">
+              <!-- Populated by app.js -->
+            </tbody>
+          </table>
+          <div class="empty-state" id="history-empty" style="display:none;">
+            No contact history yet.
+          </div>
+        </div>
+
+      </div><!-- end .history-section -->
+
+    </div><!-- end #detail-panel -->
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SETTINGS PANEL
+         Shown when the ⚙ button is clicked. Used to rename custom fields.
+    ═══════════════════════════════════════════════════════════════════ -->
+    <div class="settings-panel" id="settings-panel" style="display:none;">
+
+      <div class="panel-header">
+        <span class="panel-title">Settings</span>
+        <div class="panel-actions">
+          <button class="btn-ghost" id="btn-close-settings">Close</button>
+          <button class="btn-primary" id="btn-save-settings">Save</button>
+        </div>
+      </div>
+
+      <div class="form-section-label">Custom Field Labels</div>
+      <p class="settings-hint">Rename the 5 custom fields to suit your business. These labels appear on every customer record.</p>
+
+      <div class="form-group">
+        <label>Field 1 Label</label>
+        <input type="text" id="s_label_1" />
+      </div>
+      <div class="form-group">
+        <label>Field 2 Label</label>
+        <input type="text" id="s_label_2" />
+      </div>
+      <div class="form-group">
+        <label>Field 3 Label</label>
+        <input type="text" id="s_label_3" />
+      </div>
+      <div class="form-group">
+        <label>Field 4 Label</label>
+        <input type="text" id="s_label_4" />
+      </div>
+      <div class="form-group">
+        <label>Field 5 Label</label>
+        <input type="text" id="s_label_5" />
+      </div>
+
+    </div><!-- end #settings-panel -->
+
+  </div><!-- end .app-wrapper -->
+
+  <!-- Toast notification (appears briefly for success/error messages) -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
