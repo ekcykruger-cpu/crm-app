@@ -46,6 +46,43 @@ app.use(express.json());           // Allows us to read JSON data sent in reques
 app.use(express.static('public')); // Serves your HTML/CSS/JS files from the /public folder
 
 
+// ─── API Key Auth ─────────────────────────────────────────────────────────────
+// Protects external-facing API endpoints from unauthorised callers.
+//
+// How it works:
+//   - The secret key is stored in your .env file as API_KEY
+//   - Callers must include it in every request as a header:
+//       x-api-key: your-secret-key
+//   - If the key is missing or wrong, the server returns 401 Unauthorized
+//
+// This middleware is NOT applied globally — it is added individually to only
+// the routes that need protection (currently just /api/log).
+// The browser UI routes are left open because they are only useful if you are
+// already on the page.
+
+function requireApiKey(req, res, next) {
+  const apiKey = process.env.API_KEY;
+
+  // If no API_KEY is set in .env, skip the check and warn in the console
+  if (!apiKey) {
+    console.warn('WARNING: API_KEY is not set in .env — /api/log is unprotected!');
+    return next();
+  }
+
+  const provided = req.headers['x-api-key'];
+
+  if (!provided) {
+    return res.status(401).json({ error: 'Missing API key. Add header: x-api-key: <your key>' });
+  }
+
+  if (provided !== apiKey) {
+    return res.status(401).json({ error: 'Invalid API key.' });
+  }
+
+  next(); // Key is correct — allow the request through
+}
+
+
 // =============================================================================
 // CUSTOMER ROUTES
 // =============================================================================
@@ -215,6 +252,116 @@ app.delete('/api/history/:id', async (req, res) => {
     res.json({ message: 'Contact record deleted' });
   } catch (err) {
     console.error('DELETE /api/history/:id error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// =============================================================================
+// EXTERNAL LOG ROUTE
+// =============================================================================
+// POST /api/log  –  Add a contact history record by looking up the customer
+//                   via phone number or email address.
+//
+// This is designed for external systems (phone platforms, other apps, etc.)
+// that don't know your internal customer IDs.
+//
+// Request body (JSON):
+// {
+//   "lookup_phone": "082 555 0100",   ← find customer by phone  (use one or the other)
+//   "lookup_email": "jane@example.com", ← find customer by email
+//
+//   "contact_date":     "2024-03-15",   ← required  (YYYY-MM-DD)
+//   "contact_time":     "14:30",        ← required  (HH:MM)
+//   "agent":            "Ernst",        ← optional
+//   "contact_to":       "082 555 0100", ← optional  (number/email the customer used)
+//   "duration":         "5:30",         ← optional
+//   "disposition_code": "RESOLVED",     ← optional
+//   "notes":            "Called re account query" ← optional, max 100 chars
+// }
+//
+// Success response (201):
+// {
+//   "history": { ...the new contact record... },
+//   "customer": { id, first_name, last_name, phone, email }
+// }
+//
+// Error responses:
+//   400  –  missing required fields
+//   404  –  no customer found with that phone/email
+//   409  –  more than one customer matched (be more specific)
+//   500  –  database error
+
+app.post('/api/log', requireApiKey, async (req, res) => {
+  const {
+    lookup_phone, lookup_email,
+    contact_date, contact_time,
+    agent, contact_to, duration, disposition_code, notes
+  } = req.body;
+
+  // ── Validate required fields ────────────────────────────────────────────
+  if (!lookup_phone && !lookup_email) {
+    return res.status(400).json({
+      error: 'Provide either lookup_phone or lookup_email to identify the customer.'
+    });
+  }
+  if (!contact_date || !contact_time) {
+    return res.status(400).json({ error: 'contact_date and contact_time are required.' });
+  }
+
+  try {
+    // ── Find the customer ────────────────────────────────────────────────
+    // Search by phone OR email depending on what was provided.
+    // We strip spaces from phone numbers so "082 555 0100" matches "0825550100".
+    let customerResult;
+
+    if (lookup_phone) {
+      customerResult = await pool.query(
+        `SELECT id, first_name, last_name, phone, email
+         FROM customers
+         WHERE REPLACE(phone, ' ', '') = REPLACE($1, ' ', '')`,
+        [lookup_phone]
+      );
+    } else {
+      customerResult = await pool.query(
+        `SELECT id, first_name, last_name, phone, email
+         FROM customers
+         WHERE LOWER(email) = LOWER($1)`,
+        [lookup_email]
+      );
+    }
+
+    if (customerResult.rows.length === 0) {
+      return res.status(404).json({
+        error: `No customer found with ${lookup_phone ? 'phone: ' + lookup_phone : 'email: ' + lookup_email}`
+      });
+    }
+    if (customerResult.rows.length > 1) {
+      return res.status(409).json({
+        error: 'More than one customer matched. Use a more specific value.',
+        matches: customerResult.rows
+      });
+    }
+
+    const customer = customerResult.rows[0];
+
+    // ── Insert the contact history record ────────────────────────────────
+    const historyResult = await pool.query(
+      `INSERT INTO contact_history
+         (customer_id, contact_date, contact_time, agent, contact_to, duration, disposition_code, notes)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING *`,
+      [customer.id, contact_date, contact_time, agent, contact_to, duration, disposition_code,
+       notes ? notes.substring(0, 100) : null]   // Enforce 100-char limit server-side too
+    );
+
+    res.status(201).json({
+      history:  historyResult.rows[0],
+      customer: customer
+    });
+
+  } catch (err) {
+    console.error('POST /api/log error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

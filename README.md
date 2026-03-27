@@ -185,3 +185,4 @@ To change the colour scheme, edit the CSS variables at the top of `style.css`:
 | DELETE | `/api/history/:id` | Delete contact record |
 | GET | `/api/settings` | Get settings (field labels) |
 | PUT | `/api/settings` | Update settings |
+| POST | `/api/log` | Log a contact by phone or email (external API) |
