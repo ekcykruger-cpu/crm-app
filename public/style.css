@@ -146,7 +146,11 @@ html, body {
   flex-shrink: 0;
   max-height: 180px;
   overflow-y: auto;
-  border-bottom: 1px solid var(--border);
+  margin: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  background: var(--surface);
 }
 
 .customer-item {
@@ -214,8 +218,13 @@ html, body {
 .detail-panel,
 .settings-panel {
   flex: 1;
-  padding: 0 0 24px;
   overflow-y: auto;
+  margin: 0 12px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  background: var(--surface);
+  padding-bottom: 16px;
 }
 
 .panel-header {
@@ -360,15 +369,21 @@ html, body {
 /* ─── Contact History Section ──────────────────────────────────────────────── */
 
 .history-section {
-  border-top: 1px solid var(--border);
-  margin-top: 8px;
+  margin: 12px 12px 4px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  background: var(--surface);
+  overflow: hidden;
 }
 
 .history-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px 4px;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
 }
 
 .add-contact-form {
@@ -382,7 +397,7 @@ html, body {
 /* History Table */
 .history-table-wrap {
   overflow-x: auto;
-  padding: 0 16px;
+  padding: 0 8px 8px;
 }
 
 .history-table {

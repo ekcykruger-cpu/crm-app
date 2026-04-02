@@ -88,7 +88,14 @@ function renderCustomerList(customers) {
       </div>
     `;
 
-    item.addEventListener('click', () => loadCustomer(c.id));
+    item.addEventListener('click', () => {
+      // Pin this customer's full name in the search box so the list
+      // collapses to show only them — makes it clear who is selected.
+      const searchInput = document.getElementById('search-input');
+      searchInput.value = `${c.first_name} ${c.last_name}`;
+      searchInput.dispatchEvent(new Event('input'));
+      loadCustomer(c.id);
+    });
     list.appendChild(item);
   });
 }
@@ -409,7 +416,13 @@ async function saveSettings() {
 // Wire up all buttons and inputs here so the logic above stays clean.
 
 // Top bar
-document.getElementById('btn-new-customer').addEventListener('click', startNewCustomer);
+document.getElementById('btn-new-customer').addEventListener('click', () => {
+  // Clear the search filter so the full list is visible again
+  const searchInput = document.getElementById('search-input');
+  searchInput.value = '';
+  searchInput.dispatchEvent(new Event('input'));
+  startNewCustomer();
+});
 document.getElementById('btn-settings').addEventListener('click', () => {
   showPanel('settings');
   applyLabels();
