@@ -461,7 +461,7 @@ document.getElementById('btn-cancel-contact').addEventListener('click', () => {
 
 // Notes character counter
 document.getElementById('h_notes').addEventListener('input', function () {
-  document.getElementById('notes-hint').textContent = `${this.value.length} / 100`;
+  document.getElementById('notes-hint').textContent = `${this.value.length} / 500`;
 });
 
 // Search / filter the customer list

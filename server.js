@@ -352,7 +352,7 @@ app.post('/api/log', requireApiKey, async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
       [customer.id, contact_date, contact_time, agent, contact_to, duration, disposition_code,
-       notes ? notes.substring(0, 100) : null]   // Enforce 100-char limit server-side too
+       notes ? notes.substring(0, 500) : null]   // Enforce 500-char limit server-side too
     );
 
     res.status(201).json({
