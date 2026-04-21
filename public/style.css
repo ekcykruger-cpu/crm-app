@@ -442,6 +442,20 @@ html, body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background .15s, max-width .2s;
+}
+
+/* Expanded state — triggered by clicking the notes cell */
+.history-table td.notes-cell.expanded {
+  max-width: 400px;          /* Grows to show full content */
+  white-space: normal;       /* Allows text to wrap if very long */
+  overflow: visible;
+  text-overflow: unset;
+  background: var(--primary-light);
+  border-radius: 3px;
+  padding: 6px 8px;
+  cursor: pointer;
 }
 
 .history-table .btn-row-delete {

@@ -171,6 +171,11 @@ function renderHistory(records) {
     // Wire up the delete button for this row
     tr.querySelector('.btn-row-delete').addEventListener('click', () => deleteHistoryRecord(r.id));
 
+    // Click the notes cell to expand/collapse the full text
+    tr.querySelector('.notes-cell').addEventListener('click', function () {
+      this.classList.toggle('expanded');
+    });
+
     tbody.appendChild(tr);
   });
 }
