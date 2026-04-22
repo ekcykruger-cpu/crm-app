@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS contact_history (
   contact_to       VARCHAR(255),               -- Phone number or email the customer used
   duration         VARCHAR(20),                -- e.g. "5:30" (mm:ss) or "00:05:30" (hh:mm:ss)
   disposition_code VARCHAR(50),                -- e.g. "RESOLVED", "CALLBACK", "ESCALATED"
-  notes            VARCHAR(500),               -- Note, max 500 characters
+  notes            VARCHAR(1500),              -- Note, max 1500 characters
   created_at       TIMESTAMP DEFAULT NOW()
 );
 

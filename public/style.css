@@ -48,7 +48,7 @@ html, body {
   height: 100%;
   background: var(--bg);
   font-family: var(--font);
-  font-size: 13px;
+  font-size: 20px;   /* 13px × 1.5 = ~20px — all rem units scale with this */
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -287,7 +287,7 @@ html, body {
   display: block;
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #1e293b;   /* Dark slate — clearly readable against white background */
   margin-bottom: 3px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
