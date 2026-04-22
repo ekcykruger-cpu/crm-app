@@ -287,7 +287,7 @@ html, body {
   display: block;
   font-size: 0.72rem;
   font-weight: 600;
-  color: #1e293b;   /* Dark slate — clearly readable against white background */
+  color: var(--primary);   /* Same blue as the CRM heading */
   margin-bottom: 3px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
