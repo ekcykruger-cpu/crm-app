@@ -491,12 +491,13 @@ html, body {
   flex-shrink: 0;
 }
 
-.ch-voice    { background: #6366f1; }   /* Indigo   – Voice    */
-.ch-chat     { background: #0ea5e9; }   /* Sky blue – Chat     */
-.ch-sms      { background: #10b981; }   /* Emerald  – SMS      */
-.ch-whatsapp { background: #25d366; }   /* Green    – WhatsApp */
-.ch-facebook { background: #1877f2; }   /* Blue     – Facebook */
-.ch-x        { background: #000000; }   /* Black    – X        */
+.ch-voice    { background: #6366f1; }   /* Indigo      – Voice    */
+.ch-chat     { background: #0ea5e9; font-size: 0.85rem; }  /* Sky blue – Chat (bubble char needs slightly larger size) */
+.ch-email    { background: #7c3aed; }   /* Violet      – Email    */
+.ch-sms      { background: #3b82f6; font-weight: 900; font-size: 0.8rem; }  /* Blue – SMS (≡ text lines) */
+.ch-whatsapp { background: #25d366; }   /* WA green    – WhatsApp */
+.ch-facebook { background: #1877f2; }   /* FB blue     – Facebook */
+.ch-x        { background: #000000; }   /* Black       – X        */
 
 .history-table .btn-row-delete {
   background: none;

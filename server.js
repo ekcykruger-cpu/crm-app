@@ -293,7 +293,7 @@ app.delete('/api/history/:id', async (req, res) => {
 //   409  –  more than one customer matched (be more specific)
 //   500  –  database error
 
-const VALID_CHANNELS = ['voice', 'chat', 'SMS', 'WhatsApp', 'Facebook', 'X'];
+const VALID_CHANNELS = ['voice', 'chat', 'email', 'SMS', 'WhatsApp', 'Facebook', 'X'];
 
 app.post('/api/log', requireApiKey, async (req, res) => {
   const {

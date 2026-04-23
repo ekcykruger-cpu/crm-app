@@ -156,13 +156,13 @@ function renderHistory(records) {
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
+      <td class="ch-cell">${channelIcon(r.channel_type)}</td>
       <td>${dateStr}</td>
       <td>${timeStr}</td>
       <td title="${r.agent || ''}">${truncate(r.agent, 8)}</td>
       <td title="${r.contact_to || ''}">${truncate(r.contact_to, 10)}</td>
       <td>${r.duration || ''}</td>
       <td title="${r.disposition_code || ''}">${truncate(r.disposition_code, 8)}</td>
-      <td class="ch-cell">${channelIcon(r.channel_type)}</td>
       <td class="notes-cell" title="${r.notes || ''}">${r.notes || ''}</td>
       <td>
         <button class="btn-row-delete" data-history-id="${r.id}" title="Delete record">✕</button>
@@ -187,8 +187,9 @@ function renderHistory(records) {
 function channelIcon(channel) {
   const map = {
     voice:    { symbol: '☎',  cls: 'ch-voice',    label: 'Voice'    },
-    chat:     { symbol: '✉',  cls: 'ch-chat',     label: 'Chat'     },
-    sms:      { symbol: 'S',  cls: 'ch-sms',      label: 'SMS'      },
+    chat:     { symbol: '🗨', cls: 'ch-chat',     label: 'Chat'     },  // speech bubble
+    email:    { symbol: '✉',  cls: 'ch-email',    label: 'Email'    },
+    sms:      { symbol: '≡',  cls: 'ch-sms',      label: 'SMS'      },  // text lines, blue
     whatsapp: { symbol: 'W',  cls: 'ch-whatsapp', label: 'WhatsApp' },
     facebook: { symbol: 'f',  cls: 'ch-facebook', label: 'Facebook' },
     x:        { symbol: '𝕏', cls: 'ch-x',        label: 'X'        },
