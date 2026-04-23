@@ -162,6 +162,7 @@ function renderHistory(records) {
       <td title="${r.contact_to || ''}">${truncate(r.contact_to, 10)}</td>
       <td>${r.duration || ''}</td>
       <td title="${r.disposition_code || ''}">${truncate(r.disposition_code, 8)}</td>
+      <td class="ch-cell">${channelIcon(r.channel_type)}</td>
       <td class="notes-cell" title="${r.notes || ''}">${r.notes || ''}</td>
       <td>
         <button class="btn-row-delete" data-history-id="${r.id}" title="Delete record">✕</button>
@@ -178,6 +179,24 @@ function renderHistory(records) {
 
     tbody.appendChild(tr);
   });
+}
+
+
+// Returns a coloured icon badge for a channel type.
+// The icon is shown in the history table instead of the raw text value.
+function channelIcon(channel) {
+  const map = {
+    voice:    { symbol: '☎',  cls: 'ch-voice',    label: 'Voice'    },
+    chat:     { symbol: '✉',  cls: 'ch-chat',     label: 'Chat'     },
+    sms:      { symbol: 'S',  cls: 'ch-sms',      label: 'SMS'      },
+    whatsapp: { symbol: 'W',  cls: 'ch-whatsapp', label: 'WhatsApp' },
+    facebook: { symbol: 'f',  cls: 'ch-facebook', label: 'Facebook' },
+    x:        { symbol: '𝕏', cls: 'ch-x',        label: 'X'        },
+  };
+  const key = (channel || '').toLowerCase();
+  const ch  = map[key];
+  if (!ch) return channel ? `<span title="${channel}">—</span>` : '—';
+  return `<span class="ch-icon ${ch.cls}" title="${ch.label}">${ch.symbol}</span>`;
 }
 
 
@@ -350,6 +369,7 @@ async function saveContactRecord() {
   const contact_to       = document.getElementById('h_contact_to').value.trim();
   const duration         = document.getElementById('h_duration').value.trim();
   const disposition_code = document.getElementById('h_disposition').value.trim();
+  const channel_type     = document.getElementById('h_channel').value;
   const notes            = document.getElementById('h_notes').value.trim();
 
   if (!contact_date || !contact_time) {
@@ -360,13 +380,14 @@ async function saveContactRecord() {
   try {
     await api.addHistory(currentCustomerId, {
       contact_date, contact_time, agent, contact_to,
-      duration, disposition_code, notes
+      duration, disposition_code, channel_type, notes
     });
 
     // Clear the form
     ['h_date','h_time','h_agent','h_contact_to','h_duration','h_disposition','h_notes']
       .forEach(id => { document.getElementById(id).value = ''; });
-    document.getElementById('notes-hint').textContent = '0 / 100';
+    document.getElementById('h_channel').value = '';
+    document.getElementById('notes-hint').textContent = '0 / 1500';
 
     document.getElementById('add-contact-form').style.display = 'none';
 

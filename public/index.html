@@ -17,7 +17,7 @@
 
     <!-- ── Top Bar ─────────────────────────────────────────────────── -->
     <header class="top-bar">
-      <span class="app-title">CRM <span class="app-version">v1.8</span></span>
+      <span class="app-title">CRM <span class="app-version">v1.9</span></span>
       <div class="top-actions">
         <button class="btn-icon" id="btn-settings" title="Settings">&#9881;</button>
         <button class="btn-primary" id="btn-new-customer">+ New</button>
@@ -178,6 +178,21 @@
             </div>
           </div>
 
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label>Channel</label>
+              <select id="h_channel">
+                <option value="">— Select —</option>
+                <option value="voice">Voice</option>
+                <option value="chat">Chat</option>
+                <option value="SMS">SMS</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Facebook">Facebook</option>
+                <option value="X">X</option>
+              </select>
+            </div>
+          </div>
+
           <div class="form-group">
             <label>Notes <span class="char-hint" id="notes-hint">0 / 1500</span></label>
             <input type="text" id="h_notes" maxlength="1500" placeholder="Note about this contact…" />
@@ -192,14 +207,26 @@
         <!-- Contact History Table -->
         <div class="history-table-wrap">
           <table class="history-table" id="history-table">
+            <colgroup>
+              <col style="width:8%">   <!-- Date -->
+              <col style="width:7%">   <!-- Time -->
+              <col style="width:10%">  <!-- Agent -->
+              <col style="width:12%">  <!-- To -->
+              <col style="width:7%">   <!-- Duration -->
+              <col style="width:9%">   <!-- Code -->
+              <col style="width:5%">   <!-- Channel icon -->
+              <col>                    <!-- Notes – fills remaining space -->
+              <col style="width:4%">   <!-- Delete -->
+            </colgroup>
             <thead>
               <tr>
                 <th>Date</th>
                 <th>Time</th>
                 <th>Agent</th>
                 <th>To</th>
-                <th>Duration</th>
+                <th>Dur.</th>
                 <th>Code</th>
+                <th>Ch.</th>
                 <th>Notes</th>
                 <th></th>
               </tr>

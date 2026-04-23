@@ -227,15 +227,15 @@ app.get('/api/customers/:id/history', async (req, res) => {
 
 // POST /api/customers/:id/history  –  Add a new contact record
 app.post('/api/customers/:id/history', async (req, res) => {
-  const { contact_date, contact_time, agent, contact_to, duration, disposition_code, notes } = req.body;
+  const { contact_date, contact_time, agent, contact_to, duration, disposition_code, notes, channel_type } = req.body;
 
   try {
     const result = await pool.query(
       `INSERT INTO contact_history
-         (customer_id, contact_date, contact_time, agent, contact_to, duration, disposition_code, notes)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         (customer_id, contact_date, contact_time, agent, contact_to, duration, disposition_code, notes, channel_type)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING *`,
-      [req.params.id, contact_date, contact_time, agent, contact_to, duration, disposition_code, notes]
+      [req.params.id, contact_date, contact_time, agent, contact_to, duration, disposition_code, notes, channel_type]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -277,7 +277,8 @@ app.delete('/api/history/:id', async (req, res) => {
 //   "contact_to":       "082 555 0100", ← optional  (number/email the customer used)
 //   "duration":         "5:30",         ← optional
 //   "disposition_code": "RESOLVED",     ← optional
-//   "notes":            "Called re account query" ← optional, max 100 chars
+//   "channel_type":     "voice",         ← optional  (voice|chat|SMS|WhatsApp|Facebook|X)
+//   "notes":            "Called re account query" ← optional, max 1500 chars
 // }
 //
 // Success response (201):
@@ -292,11 +293,13 @@ app.delete('/api/history/:id', async (req, res) => {
 //   409  –  more than one customer matched (be more specific)
 //   500  –  database error
 
+const VALID_CHANNELS = ['voice', 'chat', 'SMS', 'WhatsApp', 'Facebook', 'X'];
+
 app.post('/api/log', requireApiKey, async (req, res) => {
   const {
     lookup_phone, lookup_email,
     contact_date, contact_time,
-    agent, contact_to, duration, disposition_code, notes
+    agent, contact_to, duration, disposition_code, notes, channel_type
   } = req.body;
 
   // ── Validate required fields ────────────────────────────────────────────
@@ -307,6 +310,11 @@ app.post('/api/log', requireApiKey, async (req, res) => {
   }
   if (!contact_date || !contact_time) {
     return res.status(400).json({ error: 'contact_date and contact_time are required.' });
+  }
+  if (channel_type && !VALID_CHANNELS.includes(channel_type)) {
+    return res.status(400).json({
+      error: `Invalid channel_type. Must be one of: ${VALID_CHANNELS.join(', ')}`
+    });
   }
 
   try {
@@ -348,11 +356,12 @@ app.post('/api/log', requireApiKey, async (req, res) => {
     // ── Insert the contact history record ────────────────────────────────
     const historyResult = await pool.query(
       `INSERT INTO contact_history
-         (customer_id, contact_date, contact_time, agent, contact_to, duration, disposition_code, notes)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         (customer_id, contact_date, contact_time, agent, contact_to, duration, disposition_code, notes, channel_type)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING *`,
       [customer.id, contact_date, contact_time, agent, contact_to, duration, disposition_code,
-       notes ? notes.substring(0, 1500) : null]   // Enforce 1500-char limit server-side too
+       notes ? notes.substring(0, 1500) : null,   // Enforce 1500-char limit server-side too
+       channel_type || null]
     );
 
     res.status(201).json({

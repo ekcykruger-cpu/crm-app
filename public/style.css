@@ -309,12 +309,25 @@ html, body {
   transition: border-color .15s, box-shadow .15s;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(37,99,235,.1);
 }
 
 .form-group input::placeholder { color: var(--text-muted); }
+
+.form-group select {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+}
 
 /* Two-column form row */
 .form-row.two-col {
@@ -404,6 +417,7 @@ html, body {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.72rem;
+  table-layout: fixed;   /* Respect the colgroup widths exactly */
 }
 
 .history-table thead th {
@@ -431,25 +445,22 @@ html, body {
   padding: 6px 5px;
   vertical-align: middle;
   color: var(--text-primary);
-  max-width: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* Notes column: biggest, wraps when expanded */
 .history-table td.notes-cell {
-  max-width: 100px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
-  transition: background .15s, max-width .2s;
 }
 
 /* Expanded state — triggered by clicking the notes cell */
 .history-table td.notes-cell.expanded {
-  max-width: 400px;          /* Grows to show full content */
-  white-space: normal;       /* Allows text to wrap if very long */
+  white-space: normal;
   overflow: visible;
   text-overflow: unset;
   background: var(--primary-light);
@@ -457,6 +468,35 @@ html, body {
   padding: 6px 8px;
   cursor: pointer;
 }
+
+/* Channel icon cell — centred, no overflow needed */
+.history-table td.ch-cell {
+  text-align: center;
+  overflow: visible;
+}
+
+/* ─── Channel Type Icons ──────────────────────────────────────────────────── */
+
+.ch-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #fff;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.ch-voice    { background: #6366f1; }   /* Indigo   – Voice    */
+.ch-chat     { background: #0ea5e9; }   /* Sky blue – Chat     */
+.ch-sms      { background: #10b981; }   /* Emerald  – SMS      */
+.ch-whatsapp { background: #25d366; }   /* Green    – WhatsApp */
+.ch-facebook { background: #1877f2; }   /* Blue     – Facebook */
+.ch-x        { background: #000000; }   /* Black    – X        */
 
 .history-table .btn-row-delete {
   background: none;

@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS contact_history (
   duration         VARCHAR(20),                -- e.g. "5:30" (mm:ss) or "00:05:30" (hh:mm:ss)
   disposition_code VARCHAR(50),                -- e.g. "RESOLVED", "CALLBACK", "ESCALATED"
   notes            VARCHAR(1500),              -- Note, max 1500 characters
+  channel_type     VARCHAR(20),                -- voice | chat | SMS | WhatsApp | Facebook | X
   created_at       TIMESTAMP DEFAULT NOW()
 );
 
